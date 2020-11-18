@@ -50,9 +50,11 @@ import hudson.triggers.SCMTrigger;
 import hudson.util.DescribableList;
 import hudson.util.FormValidation;
 import hudson.util.ListBoxModel;
+import jenkins.model.GlobalConfigurationCategory;
 import jenkins.model.Jenkins;
 import jenkins.plugins.git.GitSCMMatrixUtil;
 import jenkins.plugins.git.GitToolChooser;
+import jenkins.tools.ToolConfigurationCategory;
 import net.sf.json.JSONObject;
 
 import org.eclipse.jgit.errors.MissingObjectException;
@@ -62,12 +64,14 @@ import org.eclipse.jgit.revwalk.RevCommit;
 import org.eclipse.jgit.transport.RefSpec;
 import org.eclipse.jgit.transport.RemoteConfig;
 import org.eclipse.jgit.transport.URIish;
+import org.jenkinsci.Symbol;
 import org.jenkinsci.plugins.gitclient.*;
 import org.jenkinsci.plugins.scriptsecurity.sandbox.whitelists.Whitelisted;
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.StaplerRequest;
 import org.kohsuke.stapler.export.Exported;
 
+import javax.annotation.Nonnull;
 import javax.servlet.ServletException;
 
 import java.io.File;
@@ -1606,6 +1610,7 @@ public class GitSCM extends GitSCMBackwardCompatibility {
     }
 
     @Extension
+    @Symbol("git")
     public static final class DescriptorImpl extends SCMDescriptor<GitSCM> {
 
         private String gitExe;
@@ -1640,6 +1645,12 @@ public class GitSCM extends GitSCMBackwardCompatibility {
                 manage = Jenkins.ADMINISTER;
             }
             return manage;
+        }
+
+        @Nonnull
+        @Override
+        public GlobalConfigurationCategory getCategory() {
+            return GlobalConfigurationCategory.get(ToolConfigurationCategory.class);
         }
 
         public boolean isShowEntireCommitSummaryInChanges() {
